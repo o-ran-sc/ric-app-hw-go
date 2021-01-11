@@ -16,7 +16,7 @@
 #
 #----------------------------------------------------------
 
-FROM nexus3.o-ran-sc.org:10004/o-ran-sc/bldr-ubuntu18-c-go:9-u18.04 as xapp-base
+FROM nexus3.o-ran-sc.org:10004/o-ran-sc/bldr-ubuntu18-c-go:1.9.0 as xapp-base
 RUN apt-get update -y \
     &&apt-get install -y \
     apt-utils \
