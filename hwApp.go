@@ -31,6 +31,11 @@ func (e *HWApp) ConfigChangeHandler(f string) {
 	xapp.Logger.Info("Config file changed")
 }
 
+
+func (e *HWApp) xAppStartCB(d interface{}) {
+	xapp.Logger.Info("xApp ready call back received")
+}
+
 func (e *HWApp) Consume(rp *xapp.RMRParams) (err error) {
 	return
 }
@@ -42,6 +47,9 @@ func (e *HWApp) Run() {
 
 	// set config change listener
 	xapp.AddConfigChangeListener(e.ConfigChangeHandler)
+
+	// register callback after xapp ready
+	xapp.SetReadyCB(e.xAppStartCB, true)
 
 	xapp.RunWithParams(e, false)
 
