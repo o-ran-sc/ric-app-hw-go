@@ -31,12 +31,32 @@ func (e *HWApp) ConfigChangeHandler(f string) {
 	xapp.Logger.Info("Config file changed")
 }
 
-
 func (e *HWApp) xAppStartCB(d interface{}) {
 	xapp.Logger.Info("xApp ready call back received")
 }
 
-func (e *HWApp) Consume(rp *xapp.RMRParams) (err error) {
+func (e *HWApp) Consume(msg *xapp.RMRParams) (err error) {
+	id := xapp.Rmr.GetRicMessageName(msg.Mtype)
+
+	xapp.Logger.Info("Message received: name=%s meid=%s subId=%d txid=%s len=%d", id, msg.Meid.RanName, msg.SubId, msg.Xid, msg.PayloadLen)
+
+	switch id {
+	// policy request handler
+	case "A1_POLICY_REQUEST":
+		xapp.Logger.Info("Recived policy instance list")
+
+	// health check request
+	case "RIC_HEALTH_CHECK_REQ":
+		xapp.Logger.Info("Received health check request")
+
+	default:
+		xapp.Logger.Info("Unknown message type '%d', discarding", msg.Mtype)
+	}
+
+	defer func() {
+		xapp.Rmr.Free(msg.Mbuf)
+		msg.Mbuf = nil
+	}()
 	return
 }
 
