@@ -51,7 +51,11 @@ func (e *HWApp) Run() {
 	// register callback after xapp ready
 	xapp.SetReadyCB(e.xAppStartCB, true)
 
-	xapp.RunWithParams(e, false)
+	// reading configuration from config file
+	waitForSdl := xapp.Config.GetBool("db.waitForSdl")
+
+	// start xapp
+	xapp.RunWithParams(e, waitForSdl)
 
 }
 

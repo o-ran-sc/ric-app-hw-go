@@ -106,4 +106,7 @@
             ]
         }
     ]
+    "db" : {
+	    "waitForSdl": false
+    }
 }
