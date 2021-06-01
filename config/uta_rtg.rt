@@ -1,4 +1,6 @@
 newrt|start
 rte|10004|localhost:4560
 rte|10005|localhost:4591
+rte|20011|service-ricplt-a1mediator-rmr.ricplt:4562
+rte|20012|service-ricplt-a1mediator-rmr.ricplt:4562
 newrt|end

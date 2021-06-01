@@ -27,6 +27,29 @@ import (
 type HWApp struct {
 }
 
+var (
+	A1_POLICY_QUERY      = 20013
+	POLICY_QUERY_PAYLOAD = "{\"policy_type_id\":20000}"
+)
+
+func (e *HWApp) sendPolicyQuery() {
+	xapp.Logger.Info("Invoked method to send  policy query message")
+
+	// prepare and send policy query message over RMR
+	rmrParams := new(xapp.RMRParams)
+	rmrParams.Mtype = A1_POLICY_QUERY // A1_POLICY_QUERY
+	rmrParams.Payload = []byte(POLICY_QUERY_PAYLOAD)
+
+	// send rmr message
+	flg := xapp.Rmr.SendMsg(rmrParams)
+
+	if flg {
+		xapp.Logger.Info("Successfully sent policy query message over RMR")
+	} else {
+		xapp.Logger.Info("Failed to send policy query message over RMR")
+	}
+}
+
 func (e *HWApp) ConfigChangeHandler(f string) {
 	xapp.Logger.Info("Config file changed")
 }
