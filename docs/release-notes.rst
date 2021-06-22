@@ -21,7 +21,7 @@ Version history
 | **Date**           | **Ver.**           | **Author**               | **Comment**        |
 |                    |                    |                          |                    |
 +--------------------+--------------------+--------------------------+--------------------+
-| -                  | -                  |   Subhash Kumar Singh    | -                  |
+| 2021-06-23         | 1.0.0              |   Subhash Kumar Singh    | Dawn Release       |
 |                    |                    |                          |                    |
 +--------------------+--------------------+--------------------------+--------------------+
 
@@ -30,37 +30,29 @@ Version history
 Summary
 -------
 
-This release of the Python HW xAPP demonstrates the following:
+The Dawn release of the go HW xAPP demonstrates the following:
 
--E2, A1 interfaces interactions.
+- A1 interfaces interactions.
 
--Read-write operations into a persistent storage.
+- ready callback handler.
 
--xAPP Configuration management
-
--RMR Health Check
-
--xAPP Health Check
-
--Raising alarms
-
--Generating metrics
+- xAPP Configuration management
 
 
 Release Data
 ------------
 
 +--------------------------------------+--------------------------------------+
-| **Project**                          | RAN Intelligent Controller           |
+| **Project**                          |     hw-go                            |
 |                                      |                                      |
 +--------------------------------------+--------------------------------------+
-| **Repo/commit-ID**                   |      TBD                             |
+| **Repo/commit-ID**                   |      ric-app/hw-go                   |
 |                                      |                                      |
 +--------------------------------------+--------------------------------------+
-| **Release designation**              |      TBD                             |
+| **Release designation**              |      Dawn                            |
 |                                      |                                      |
 +--------------------------------------+--------------------------------------+
-| **Release date**                     |      TBD                             |
+| **Release date**                     |      2021-06-23                      |
 |                                      |                                      |
 +--------------------------------------+--------------------------------------+
 | **Purpose of the delivery**          | open-source golang Hello World xAPP  |
@@ -68,18 +60,4 @@ Release Data
 |                                      |                                      |
 +--------------------------------------+--------------------------------------+
 
-Components
-----------
 
-TBD
-
-  
-    
-
-Limitations
------------
-- The HW-go xAPP doesn't have any usecase in particular to display SDL capabilities.
-
-- The subscription process assumes, on sending subscription request results in valid subscription response. 
-
-- The HW-go xAPP doesn't address any RIC usecase in particular.
