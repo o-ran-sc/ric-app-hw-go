@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "28c0721a_5b1e9bda",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2021-06-25T09:07:24Z",
+      "side": 1,
+      "message": "Please hold on this patch as I need to update go.mod.",
+      "revId": "7ca9260bc0c1d902cfb2d2c7d332b16367c0c31b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
