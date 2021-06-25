@@ -1,25 +1,13 @@
 {
     "name": "hw-go",
-    "version": "0.0.1",
-    "vendor": "ric-app",
-    "moId": "SEP",
+    "version": "1.0.0",
     "containers": [
         {
             "name": "hw-go",
             "image": {
                 "registry": "nexus3.o-ran-sc.org:10004",
                 "name": "o-ran-sc/ric-app-hw-go",
-                "tag": "0.0.1"
-            },
-            "resources": {
-                "limits": {
-                    "cpu": "1",
-                    "memory": "50Mi"
-                },
-                "requests": {
-                    "cpu": "1",
-                    "memory": "100Mi"
-                }
+                "tag": "1.0.0"
             }
         }
     ],
@@ -43,70 +31,48 @@
         "ports": [
             {
                 "name": "http",
-                "container": "example",
+                "container": "hw-go",
                 "port": 8080,
                 "description": "http service"
             },
             {
-                "name": "rmr-route",
-                "container": "example",
+                "name": "rmrroute",
+                "container": "hw-go",
                 "port": 4561,
-                "description": "rmr route port for example"
+                "description": "rmr route port for hw-go xapp"
             },
             {
-                "name": "rmr-data",
-                "container": "example",
+                "name": "rmrdata",
+                "container": "hw-go",
                 "port": 4560,
-                "maxSize": 65536,
                 "rxMessages": ["RIC_SUB_RESP", "RIC_SUB_FAILURE", "RIC_SUB_DEL_RESP", "RIC_INDICATION"],
                 "txMessages": ["RIC_SUB_REQ", "RIC_SUB_DEL_REQ", "RIC_SGNB_ADDITION_REQ", "RIC_SGNB_ADDITION_ACK"],
                 "mtypes" : [
                         {"name":"TESTNAME1","id":55555},
                         {"name":"TESTNAME2","id":55556}
                 ],
-                "policies": [],
-                "description": "rmr data port for example"
+                "policies": [1],
+                "description": "rmr data port for hw-go"
             }
         ]
     },
+    "rmr": {
+        "protPort": "tcp:4560",
+        "maxSize": 2072,
+        "numWorkers": 1,
+        "txMessages": [
+            "RIC_SUB_REQ", "A1_POLICY_RESP", "A1_POLICY_QUERY", "RIC_HEALTH_CHECK_RESP"
+        ],
+        "rxMessages": [
+            "RIC_SUB_RESP",
+            "A1_POLICY_REQ", "RIC_HEALTH_CHECK_REQ"
+        ],
+    "policies": [1]
+    },
     "controls": {
-        "logger": {
-            "level": 3
-        },
-        "subscription": {
-            "subscriptionActive": true
-        }
+            "fileStrorage": false
     },
-    "metrics": {
-        "url": "/ric/v1/metrics",
-        "namespace": "ricxapp"
-    },
-    "faults": { },
-    "measurements": [
-        {
-            "moId": "XAPP-example",
-            "measType": "X2AP_Streaming",
-            "measId": "91001",
-            "measInterval": "60",
-            "metrics": [
-                {
-                    "objectName": "UEEventStreamingCounters",
-                    "objectInstance": "SgNBAdditionRequest",
-                    "name": "ricxapp_ExampleXapp_SgNBAdditionRequest",
-                    "type": "counter",
-                    "description": "The total number of SG addition request events processed"
-                },
-                {
-                    "objectName": "UEEventStreamingCounters",
-                    "objectInstance": "SgNBAdditionRequestAcknowledge",
-                    "name": "ricxapp_ExampleXapp_SgNBAdditionRequestAcknowledge",
-                    "type": "counter",
-                    "description": "The total number of SG addition request acknowledge events"
-                }
-            ]
-        }
-    ],
     "db" : {
-	    "waitForSdl": false
+            "waitForSdl": false
     }
 }
