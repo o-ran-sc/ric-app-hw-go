@@ -59,9 +59,10 @@ The HW-go xAPP can be either tested as a Linux binary or as a docker image.
 
 Deployment
 ~~~~~~~~~~
-**Invoking  HW-go xAPP docker container directly** (not in RIC Kubernetes env.):
-        One can include the pod.yaml for including it in k8s build. Replace the image name with one built.
-        TBD: Adding HW-go xAPP to nexus repo
+
+End to end deployment of `hw-go` can be referred at :
+
+  :ref: `Deployment Guide`.
 
 Testing 
 --------
