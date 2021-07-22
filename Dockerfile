@@ -16,17 +16,39 @@
 #
 #----------------------------------------------------------
 
-FROM golang:1.15
+FROM nexus3.o-ran-sc.org:10002/o-ran-sc/bldr-ubuntu18-c-go:1.9.0 as build-hw-go
 
-ARG RMRVERSION=4.5.2
-RUN wget --content-disposition https://packagecloud.io/o-ran-sc/release/packages/debian/stretch/rmr_${RMRVERSION}_amd64.deb/download.deb && dpkg -i rmr_${RMRVERSION}_amd64.deb
-RUN wget --content-disposition https://packagecloud.io/o-ran-sc/release/packages/debian/stretch/rmr-dev_${RMRVERSION}_amd64.deb/download.deb && dpkg -i rmr-dev_${RMRVERSION}_amd64.deb
-RUN mkdir -p /ws
-WORKDIR "/ws"
+# Install utilities
+RUN apt update && apt install -y iputils-ping net-tools curl sudo
 
-COPY . /ws
+# Install RMr shared library & development header files
+RUN wget --content-disposition https://packagecloud.io/o-ran-sc/release/packages/debian/stretch/rmr_4.7.0_amd64.deb/download.deb && dpkg -i rmr_4.7.0_amd64.deb && rm -rf rmr_4.7.0_amd64.deb
+RUN wget --content-disposition https://packagecloud.io/o-ran-sc/release/packages/debian/stretch/rmr-dev_4.7.0_amd64.deb/download.deb && dpkg -i rmr-dev_4.7.0_amd64.deb && rm -rf rmr-dev_4.7.0_amd64.deb
+
+# Install dependencies, compile and test the module
+RUN mkdir -p /go/src/hw-go
+COPY . /go/src/hw-go
+
+WORKDIR "/go/src/hw-go"
+
+ENV GO111MODULE=on GO_ENABLED=0 GOOS=linux
+
+RUN go build -a -installsuffix cgo -o hw-go hwApp.go
+
+
+# Final deployment container
+FROM ubuntu:18.04
+
+ENV CFG_FILE=config/config-file.json
+ENV RMR_SEED_RT=config/uta_rtg.rt
+
+RUN mkdir /config
+
+COPY --from=build-hw-go /go/src/hw-go/hw-go /
+COPY --from=build-hw-go /go/src/hw-go/config/* /config/
+COPY --from=build-hw-go /usr/local/lib /usr/local/lib
+
 RUN ldconfig
-RUN GO111MODULE=on GO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o hw-app hwApp.go
-#CMD RMR_SEED_RT=config/uta_rtg.rt ./hw-app -f config/test-config.json
-CMD RMR_SEED_RT=config/uta_rtg.rt ./hw-app -f config/config-file.json
 
+RUN chmod 755 /hw-go
+CMD /hw-go
