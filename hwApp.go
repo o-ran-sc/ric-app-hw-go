@@ -54,8 +54,54 @@ func (e *HWApp) ConfigChangeHandler(f string) {
 	xapp.Logger.Info("Config file changed")
 }
 
+func (e *HWApp) getEnbList() ([]*xapp.RNIBNbIdentity, error){
+       enbs, err := xapp.Rnib.GetListEnbIds()
+
+       if err != nil {
+               xapp.Logger.Error("err: %s", err)
+               return nil, err
+       }
+
+       xapp.Logger.Info("List for connected eNBs :")
+       for index, enb := range enbs {
+               xapp.Logger.Info("%d. enbid: %s", index+1, enb.InventoryName)
+       }
+       return enbs, nil
+}
+
+func (e *HWApp) getGnbList() ([]*xapp.RNIBNbIdentity, error) {
+       gnbs, err := xapp.Rnib.GetListGnbIds()
+
+       if err != nil {
+               xapp.Logger.Error("err: %s", err)
+               return nil, err
+       }
+
+       xapp.Logger.Info("List of connected gNBs :")
+       for index, gnb := range gnbs {
+               xapp.Logger.Info("%d. gnbid : %s", index+1, gnb.InventoryName)
+       }
+       return gnbs, nil
+}
+
+func (e *HWApp) getnbList() ([]*xapp.RNIBNbIdentity) {
+       nbs := []*xapp.RNIBNbIdentity{}
+
+       if enbs , err := e.getEnbList(); err == nil {
+              nbs = append(nbs, enbs...)
+       }
+
+       if gnbs, err := e.getGnbList(); err == nil {
+              nbs = append(nbs, gnbs...)
+       }
+       return nbs
+}
+
 func (e *HWApp) xAppStartCB(d interface{}) {
 	xapp.Logger.Info("xApp ready call back received")
+
+       // get the list of all NBs
+       e.getnbList()
 }
 
 func (e *HWApp) Consume(msg *xapp.RMRParams) (err error) {
