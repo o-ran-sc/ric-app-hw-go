@@ -21,6 +21,8 @@
 package main
 
 import (
+       "encoding/json"
+       "gerrit.o-ran-sc.org/r/ric-plt/xapp-frame/pkg/clientmodel"
 	"gerrit.o-ran-sc.org/r/ric-plt/xapp-frame/pkg/xapp"
 )
 
@@ -30,6 +32,21 @@ type HWApp struct {
 var (
 	A1_POLICY_QUERY      = 20013
 	POLICY_QUERY_PAYLOAD = "{\"policy_type_id\":20000}"
+        reqId               = int64(1)
+        seqId               = int64(1)
+        funId               = int64(1)
+        actionId            = int64(1)
+        actionType          = "report"
+        subsequestActioType = "continue"
+        timeToWait          = "w10ms"
+        direction           = int64(0)
+        procedureCode       = int64(27)
+        typeOfMessage       = int64(1)
+        subscriptionId      = ""
+        hPort               = int64(8080)
+        rPort               = int64(4560)
+        clientEndpoint      = clientmodel.SubscriptionParamsClientEndpoint{Host: "service-ricxapp-hw-go-http.ricxapp", HTTPPort: &hPort, RMRPort: &rPort}
+
 )
 
 func (e *HWApp) sendPolicyQuery() {
@@ -97,11 +114,66 @@ func (e *HWApp) getnbList() ([]*xapp.RNIBNbIdentity) {
        return nbs
 }
 
+func (e *HWApp) sendSubscription(meid string) {
+
+       xapp.Logger.Info("sending subscription request for meid : %s", meid)
+
+       subscriptionParams := clientmodel.SubscriptionParams{
+                ClientEndpoint: &clientEndpoint,
+                Meid:           &meid,
+                RANFunctionID:  &funId,
+                SubscriptionDetails: clientmodel.SubscriptionDetailsList{
+                        &clientmodel.SubscriptionDetail{
+                                RequestorID: &reqId,
+                                InstanceID:  &seqId,
+                                EventTriggers: &clientmodel.EventTriggerDefinition{
+                                        OctetString: "1234",
+                                },
+                                ActionToBeSetupList: clientmodel.ActionsToBeSetup{
+                                        &clientmodel.ActionToBeSetup{
+                                                ActionDefinition: &clientmodel.ActionDefinition{
+                                                        OctetString: "5678",
+                                                },
+                                                ActionID:   &actionId,
+                                                ActionType: &actionType,
+                                                SubsequentAction: &clientmodel.SubsequentAction{
+                                                        SubsequentActionType: &subsequestActioType,
+                                                        TimeToWait:           &timeToWait,
+                                                },
+                                        },
+                                },
+                        },
+                },
+        }
+
+        b, err := json.MarshalIndent(subscriptionParams, "", "  ")
+
+       if err != nil {
+               xapp.Logger.Error("Json marshaling failed : %s", err)
+               return
+       }
+
+        xapp.Logger.Info("*****body: %s ", string(b))
+
+       resp, err := xapp.Subscription.Subscribe(&subscriptionParams)
+
+       if err != nil {
+               xapp.Logger.Error("subscription failed (%s) with error: %s", meid, err)
+               return
+       }
+       xapp.Logger.Info("Successfully subcription done (%s), subscription id : %s", meid, *resp.SubscriptionID)
+}
+
 func (e *HWApp) xAppStartCB(d interface{}) {
 	xapp.Logger.Info("xApp ready call back received")
 
        // get the list of all NBs
-       e.getnbList()
+       nbList := e.getnbList()
+
+       // send subscription request to each of the NBs
+       for _, nb := range nbList {
+       e.sendSubscription(nb.InventoryName)
+       }
 }
 
 func (e *HWApp) Consume(msg *xapp.RMRParams) (err error) {

@@ -70,7 +70,10 @@
     "policies": [1]
     },
     "controls": {
-            "fileStrorage": false
+           "fileStrorage": false,
+           "logger": {
+                   "level": 3
+           }
     },
     "db" : {
             "waitForSdl": false
