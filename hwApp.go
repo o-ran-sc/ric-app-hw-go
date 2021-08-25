@@ -22,31 +22,32 @@ package main
 
 import (
        "encoding/json"
+
        "gerrit.o-ran-sc.org/r/ric-plt/xapp-frame/pkg/clientmodel"
 	"gerrit.o-ran-sc.org/r/ric-plt/xapp-frame/pkg/xapp"
 )
 
 type HWApp struct {
+       stats map[string]xapp.Counter
 }
 
 var (
 	A1_POLICY_QUERY      = 20013
 	POLICY_QUERY_PAYLOAD = "{\"policy_type_id\":20000}"
-        reqId               = int64(1)
-        seqId               = int64(1)
-        funId               = int64(1)
-        actionId            = int64(1)
-        actionType          = "report"
-        subsequestActioType = "continue"
-        timeToWait          = "w10ms"
-        direction           = int64(0)
-        procedureCode       = int64(27)
-        typeOfMessage       = int64(1)
-        subscriptionId      = ""
-        hPort               = int64(8080)
-        rPort               = int64(4560)
-        clientEndpoint      = clientmodel.SubscriptionParamsClientEndpoint{Host: "service-ricxapp-hw-go-http.ricxapp", HTTPPort: &hPort, RMRPort: &rPort}
-
+       reqId                = int64(1)
+       seqId                = int64(1)
+       funId                = int64(1)
+       actionId             = int64(1)
+       actionType           = "report"
+       subsequestActioType  = "continue"
+       timeToWait           = "w10ms"
+       direction            = int64(0)
+       procedureCode        = int64(27)
+       typeOfMessage        = int64(1)
+       subscriptionId       = ""
+       hPort                = int64(8080)
+       rPort                = int64(4560)
+       clientEndpoint       = clientmodel.SubscriptionParamsClientEndpoint{Host: "service-ricxapp-hw-go-http.ricxapp", HTTPPort: &hPort, RMRPort: &rPort}
 )
 
 func (e *HWApp) sendPolicyQuery() {
@@ -71,7 +72,7 @@ func (e *HWApp) ConfigChangeHandler(f string) {
 	xapp.Logger.Info("Config file changed")
 }
 
-func (e *HWApp) getEnbList() ([]*xapp.RNIBNbIdentity, error){
+func (e *HWApp) getEnbList() ([]*xapp.RNIBNbIdentity, error) {
        enbs, err := xapp.Rnib.GetListEnbIds()
 
        if err != nil {
@@ -101,15 +102,15 @@ func (e *HWApp) getGnbList() ([]*xapp.RNIBNbIdentity, error) {
        return gnbs, nil
 }
 
-func (e *HWApp) getnbList() ([]*xapp.RNIBNbIdentity) {
+func (e *HWApp) getnbList() []*xapp.RNIBNbIdentity {
        nbs := []*xapp.RNIBNbIdentity{}
 
-       if enbs , err := e.getEnbList(); err == nil {
-              nbs = append(nbs, enbs...)
+       if enbs, err := e.getEnbList(); err == nil {
+               nbs = append(nbs, enbs...)
        }
 
        if gnbs, err := e.getGnbList(); err == nil {
-              nbs = append(nbs, gnbs...)
+               nbs = append(nbs, gnbs...)
        }
        return nbs
 }
@@ -119,41 +120,41 @@ func (e *HWApp) sendSubscription(meid string) {
        xapp.Logger.Info("sending subscription request for meid : %s", meid)
 
        subscriptionParams := clientmodel.SubscriptionParams{
-                ClientEndpoint: &clientEndpoint,
-                Meid:           &meid,
-                RANFunctionID:  &funId,
-                SubscriptionDetails: clientmodel.SubscriptionDetailsList{
-                        &clientmodel.SubscriptionDetail{
-                                RequestorID: &reqId,
-                                InstanceID:  &seqId,
-                                EventTriggers: &clientmodel.EventTriggerDefinition{
-                                        OctetString: "1234",
-                                },
-                                ActionToBeSetupList: clientmodel.ActionsToBeSetup{
-                                        &clientmodel.ActionToBeSetup{
-                                                ActionDefinition: &clientmodel.ActionDefinition{
-                                                        OctetString: "5678",
-                                                },
-                                                ActionID:   &actionId,
-                                                ActionType: &actionType,
-                                                SubsequentAction: &clientmodel.SubsequentAction{
-                                                        SubsequentActionType: &subsequestActioType,
-                                                        TimeToWait:           &timeToWait,
-                                                },
-                                        },
-                                },
-                        },
-                },
-        }
+               ClientEndpoint: &clientEndpoint,
+               Meid:           &meid,
+               RANFunctionID:  &funId,
+               SubscriptionDetails: clientmodel.SubscriptionDetailsList{
+                       &clientmodel.SubscriptionDetail{
+                               RequestorID: &reqId,
+                               InstanceID:  &seqId,
+                               EventTriggers: &clientmodel.EventTriggerDefinition{
+                                       OctetString: "1234",
+                               },
+                               ActionToBeSetupList: clientmodel.ActionsToBeSetup{
+                                       &clientmodel.ActionToBeSetup{
+                                               ActionDefinition: &clientmodel.ActionDefinition{
+                                                       OctetString: "5678",
+                                               },
+                                               ActionID:   &actionId,
+                                               ActionType: &actionType,
+                                               SubsequentAction: &clientmodel.SubsequentAction{
+                                                       SubsequentActionType: &subsequestActioType,
+                                                       TimeToWait:           &timeToWait,
+                                               },
+                                       },
+                               },
+                       },
+               },
+       }
 
-        b, err := json.MarshalIndent(subscriptionParams, "", "  ")
+       b, err := json.MarshalIndent(subscriptionParams, "", "  ")
 
        if err != nil {
                xapp.Logger.Error("Json marshaling failed : %s", err)
                return
        }
 
-        xapp.Logger.Info("*****body: %s ", string(b))
+       xapp.Logger.Info("*****body: %s ", string(b))
 
        resp, err := xapp.Subscription.Subscribe(&subscriptionParams)
 
@@ -172,8 +173,13 @@ func (e *HWApp) xAppStartCB(d interface{}) {
 
        // send subscription request to each of the NBs
        for _, nb := range nbList {
-       e.sendSubscription(nb.InventoryName)
+               e.sendSubscription(nb.InventoryName)
        }
+}
+
+func (e *HWApp) handleRICIndication(ranName string, r *xapp.RMRParams) {
+       // update metrics for indication message
+       e.stats["RICIndicationRx"].Inc()
 }
 
 func (e *HWApp) Consume(msg *xapp.RMRParams) (err error) {
@@ -189,6 +195,11 @@ func (e *HWApp) Consume(msg *xapp.RMRParams) (err error) {
 	// health check request
 	case "RIC_HEALTH_CHECK_REQ":
 		xapp.Logger.Info("Received health check request")
+
+       // RIC INDICATION message
+       case "RIC_INDICATION":
+               xapp.Logger.Info("Received RIC Indication message")
+               e.handleRICIndication(msg.Meid.RanName, msg)
 
 	default:
 		xapp.Logger.Info("Unknown message type '%d', discarding", msg.Mtype)
@@ -221,6 +232,16 @@ func (e *HWApp) Run() {
 }
 
 func main() {
-	hw := HWApp{}
+       // Defind metrics counter that the xapp provides
+       metrics := []xapp.CounterOpts{
+               {
+                       Name: "RICIndicationRx",
+                       Help: "Total number of RIC Indication message received",
+               },
+       }
+
+       hw := HWApp{
+               stats: xapp.Metric.RegisterCounterGroup(metrics, "hw-go"), // register counter
+       }
 	hw.Run()
 }
