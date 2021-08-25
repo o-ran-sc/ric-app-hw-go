@@ -23,6 +23,7 @@ package main
 import (
 	"encoding/json"
 
+       "gerrit.o-ran-sc.org/r/ric-plt/alarm-go.git/alarm"
 	"gerrit.o-ran-sc.org/r/ric-plt/xapp-frame/pkg/clientmodel"
 	"gerrit.o-ran-sc.org/r/ric-plt/xapp-frame/pkg/xapp"
 )
@@ -160,6 +161,13 @@ func (e *HWApp) sendSubscription(meid string) {
 
 	if err != nil {
 		xapp.Logger.Error("subscription failed (%s) with error: %s", meid, err)
+
+               // subscription failed, raise alarm
+               err := xapp.Alarm.Raise(8086, alarm.SeverityCritical, meid, "subscriptionFailed")
+               if err != nil {
+                       xapp.Logger.Error("Raising alarm failed with error %v", err)
+               }
+
 		return
 	}
 	xapp.Logger.Info("Successfully subcription done (%s), subscription id : %s", meid, *resp.SubscriptionID)
