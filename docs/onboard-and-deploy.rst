@@ -7,6 +7,9 @@
 Onboarding and Deployment of Hw-go xApp
 =======================================
 
+.. contents::
+  :depth: 3
+  :local:
 
 Onboarding of hw-go using dms_cli tool
 --------------------------------------
@@ -14,7 +17,7 @@ Onboarding of hw-go using dms_cli tool
 `dms_cli` offers rich set of command line utility to onboard *hw-go* xapp
 to `chartmuseme`.
 
-First checkout the [hw-go] (https://gerrit.o-ran-sc.org/r/admin/repos/ric-app/hw-go) repository from gerrit.
+First checkout the `hw-go <https://gerrit.o-ran-sc.org/r/admin/repos/ric-app/hw-go>`_ repository from gerrit.
 
 .. code-block:: bash
 
@@ -39,7 +42,7 @@ First checkout the [hw-go] (https://gerrit.o-ran-sc.org/r/admin/repos/ric-app/hw
   └── hwApp.go
 
 
-For onboarding `hw-go` make sure that `dms_cli` and helm3 is installed. One can follow [documentation](https://docs.o-ran-sc.org/projects/o-ran-sc-it-dep/en/latest/installation-guides.html#ric-applications) to
+For onboarding `hw-go` make sure that `dms_cli` and helm3 is installed. One can follow `documentation <https://docs.o-ran-sc.org/projects/o-ran-sc-it-dep/en/latest/installation-guides.html#ric-applications>`_ to
 configure `dms_cli`.
 
 Once `dms_cli` is availabe we can proceed to onboarding procedure.

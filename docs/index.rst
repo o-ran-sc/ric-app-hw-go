@@ -14,6 +14,7 @@ Welcome to O-RAN SC HW-go Documentation
    release-notes.rst
    installation-guide.rst
    user-guide.rst
+   onboard-and-deploy.rst
 
 * :ref:`genindex`
 * :ref:`modindex`

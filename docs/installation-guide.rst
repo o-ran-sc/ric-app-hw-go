@@ -15,16 +15,6 @@ Abstract
 
 This document describes how to install the reference HW-go xAPP.
 
-Version history
-
-+--------------------+--------------------+--------------------+--------------------+
-| **Date**           | **Ver.**           | **Author**         | **Comment**        |
-|                    |                    |                    |                    |
-+--------------------+--------------------+--------------------+--------------------+
-| -                  |-                   |Rahul Banerji       | -                  |
-|                    |                    |                    |                    |
-+--------------------+--------------------+--------------------+--------------------+
-
 
 Introduction
 ------------
@@ -37,7 +27,7 @@ Preface
 -------
 This xAPP can be run directly as a Linux binary, as a docker image, or in a pod in a Kubernetes environment.  The first
 two can be used for dev testing. The last option is how an xAPP is deployed in the RAN Intelligent Controller environment.
-This document covers all three methods.  
+This document covers all three methods.
 
 
 
@@ -51,7 +41,7 @@ the Docker environment must be present in the system.
 Build Process
 ~~~~~~~~~~~~~
 The HW-go xAPP can be either tested as a Linux binary or as a docker image.
-   1. **Linux binary**: 
+   1. **Linux binary**:
       TBD
 
    2. **Docker Image**: From the root of the repository, run   *docker --no-cache build -t <image-name> ./* .
@@ -62,9 +52,9 @@ Deployment
 
 End to end deployment of `hw-go` can be referred at :
 
-  :ref: `Deployment Guide`.
+  :ref:`Deployment Guide`.
 
-Testing 
+Testing
 --------
 
 Unit tests TBD
