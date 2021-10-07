@@ -19,7 +19,7 @@
 FROM nexus3.o-ran-sc.org:10002/o-ran-sc/bldr-ubuntu18-c-go:1.9.0 as build-hw-go
 
 # Install utilities
-RUN apt update && apt install -y iputils-ping net-tools curl sudo
+RUN apt update && apt install -y iputils-ping net-tools curl sudo ca-certificates
 
 # Install RMr shared library & development header files
 RUN wget --content-disposition https://packagecloud.io/o-ran-sc/release/packages/debian/stretch/rmr_4.7.0_amd64.deb/download.deb && dpkg -i rmr_4.7.0_amd64.deb && rm -rf rmr_4.7.0_amd64.deb
