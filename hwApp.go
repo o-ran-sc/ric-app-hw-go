@@ -247,7 +247,7 @@ func main() {
 	}
 
 	hw := HWApp{
-		stats: xapp.Metric.RegisterCounterGroup(metrics, "hw-go"), // register counter
+               stats: xapp.Metric.RegisterCounterGroup(metrics, "hw_go"), // register counter
 	}
 	hw.Run()
 }
