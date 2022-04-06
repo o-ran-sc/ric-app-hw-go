@@ -21,7 +21,7 @@ package main
 import (
 	"encoding/json"
 
-       "gerrit.o-ran-sc.org/r/ric-plt/alarm-go.git/alarm"
+	"gerrit.o-ran-sc.org/r/ric-plt/alarm-go.git/alarm"
 	"gerrit.o-ran-sc.org/r/ric-plt/xapp-frame/pkg/clientmodel"
 	"gerrit.o-ran-sc.org/r/ric-plt/xapp-frame/pkg/xapp"
 )
@@ -42,11 +42,12 @@ var (
 	timeToWait           = "w10ms"
 	direction            = int64(0)
 	procedureCode        = int64(27)
+	xappEventInstanceID  = int64(1234)
 	typeOfMessage        = int64(1)
 	subscriptionId       = ""
 	hPort                = int64(8080)
 	rPort                = int64(4560)
-	clientEndpoint       = clientmodel.SubscriptionParamsClientEndpoint{Host: "service-ricxapp-hw-go-http.ricxapp", HTTPPort: &hPort, RMRPort: &rPort}
+	clientEndpoint       = clientmodel.SubscriptionParamsClientEndpoint{Host: "service-ricxapp-hw-go-rmr.ricxapp", HTTPPort: &hPort, RMRPort: &rPort}
 )
 
 func (e *HWApp) sendPolicyQuery() {
@@ -122,28 +123,23 @@ func (e *HWApp) sendSubscription(meid string) {
 		ClientEndpoint: &clientEndpoint,
 		Meid:           &meid,
 		RANFunctionID:  &funId,
-		SubscriptionDetails: clientmodel.SubscriptionDetailsList{
-			&clientmodel.SubscriptionDetail{
-				RequestorID: &reqId,
-				InstanceID:  &seqId,
-				EventTriggers: &clientmodel.EventTriggerDefinition{
-					OctetString: "1234",
-				},
+		SubscriptionDetails: clientmodel.SubscriptionDetailsList([]*clientmodel.SubscriptionDetail{
+			{
 				ActionToBeSetupList: clientmodel.ActionsToBeSetup{
 					&clientmodel.ActionToBeSetup{
-						ActionDefinition: &clientmodel.ActionDefinition{
-							OctetString: "5678",
-						},
-						ActionID:   &actionId,
-						ActionType: &actionType,
+						ActionDefinition: clientmodel.ActionDefinition([]int64{1, 2, 3, 4}),
+						ActionID:         &actionId,
+						ActionType:       &actionType,
 						SubsequentAction: &clientmodel.SubsequentAction{
 							SubsequentActionType: &subsequestActioType,
 							TimeToWait:           &timeToWait,
 						},
 					},
 				},
+				EventTriggers:       clientmodel.EventTriggerDefinition([]int64{1, 2, 3, 4}),
+				XappEventInstanceID: &xappEventInstanceID,
 			},
-		},
+		}),
 	}
 
 	b, err := json.MarshalIndent(subscriptionParams, "", "  ")
@@ -160,11 +156,11 @@ func (e *HWApp) sendSubscription(meid string) {
 	if err != nil {
 		xapp.Logger.Error("subscription failed (%s) with error: %s", meid, err)
 
-               // subscription failed, raise alarm
-               err := xapp.Alarm.Raise(8086, alarm.SeverityCritical, meid, "subscriptionFailed")
-               if err != nil {
-                       xapp.Logger.Error("Raising alarm failed with error %v", err)
-               }
+		// subscription failed, raise alarm
+		err := xapp.Alarm.Raise(8086, alarm.SeverityCritical, meid, "subscriptionFailed")
+		if err != nil {
+			xapp.Logger.Error("Raising alarm failed with error %v", err)
+		}
 
 		return
 	}
@@ -247,7 +243,7 @@ func main() {
 	}
 
 	hw := HWApp{
-               stats: xapp.Metric.RegisterCounterGroup(metrics, "hw_go"), // register counter
+		stats: xapp.Metric.RegisterCounterGroup(metrics, "hw_go"), // register counter
 	}
 	hw.Run()
 }
